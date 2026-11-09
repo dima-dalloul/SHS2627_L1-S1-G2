@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class Main {
     public static void main(String[] args) {
         char[] rotor1 = {'e','l','w','m','h','a','s','n','o','i','x','y','b','r','z','q','d','c','v','g','t','f','k','p','u','j'};
@@ -14,10 +16,22 @@ public class Main {
         System.out.println("Rotor Retour pour 'a' est " + passeUnRotorRetour(rotor1, 'a'));
         System.out.println("Rotor Retour pour 'u' est " + passeUnRotorRetour(rotor1, 'u'));
 
-        // Je teste le décodage
+        // Je teste le décodage de caractères
         System.out.println("Décodage de 'a' est " + decodeCar(rotor1, rotor2, reflec, 'a'));
         System.out.println("Décodage de 'h' est " + decodeCar(rotor1, rotor2, reflec, 'h'));
         System.out.println("Décodage de 'z' est " + decodeCar(rotor1, rotor2, reflec, 'z'));
+
+        // Je teste le décodage de message
+        System.out.println("Le message encodé est : " + decodeMsgQuestionB("ugdxl avtgvl ov bheh qhg lvkhxzv evgl sh ovtixvkv hzzvv zdtl vkkvzv", rotor1, rotor2, reflec));
+
+        // Je teste le décalage de tableau
+        char[] t = {'a','b','c','d'};
+        System.out.println(Arrays.toString(t));
+        decaler(t);
+        System.out.println(Arrays.toString(t));
+
+        // Je teste le décalage des rotors avec le décodage du message
+        System.out.println("Le message encodé est : " + decodeMsgQuestionD("ypoyarhcmsejvud nfs zpl isw uvssacwvv", rotor1, rotor2, reflec));
     }
 
     /*
@@ -91,4 +105,93 @@ public class Main {
 
         return etape5;
     }
+
+    /**
+     * Écrire la fonction decodeMsg pour décoder, caractère par caractère, une chaîne. Si un caractère est
+     * un espace, ne le décodez pas, recopiez-le tel quel dans la chaîne résultat. Utilisez votre programme pour
+     * décoder le message :
+     * ugdxl avtgvl ov bheh qhg lvkhxzv evgl sh ovtixvkv hzzvv zdtl vkkvzv
+     */
+    public static String decodeMsgQuestionB(String chaineADecoder, char[] rotor1, char[] rotor2, char[] reflec){
+        String resultatDecodage = "";   // chaîne de caractères à renvoyer, au début elle est vide
+
+        // j'itère sur chaque caractère de la chaîne à décoder
+        for(int i = 0; i < chaineADecoder.length(); i++){
+            // si le caractère est un espace, je le recopie tel quel dans la chaîne résultat
+            if(chaineADecoder.charAt(i) == ' ')
+                resultatDecodage += ' ';
+                // Équivalent à resultatDecodage = resultatDecodage + ' ';
+
+            else{
+                // si ce n'est pas un espace, on  le décode
+                char lettreADecoder = decodeCar(rotor1, rotor2, reflec, chaineADecoder.charAt(i));
+                resultatDecodage += lettreADecoder;
+                // Équivalent à resultatDecodage = resultatDecodage + lettreADecoder;
+            }
+        }
+        return resultatDecodage;
+    }
+
+    /**
+     * Écrire l'action decaler qui, étant donné un tableau de caractères, décale ses éléments d'un cran vers le
+     * début, le premier élément étant affecté à la dernière case du tableau. Attention à l'ordre dans lequel
+     * vous faites ces opérations. Testez cette action. Pour cela, vous pouvez afficher le contenu d'un tableau
+     * en écrivant votre propre action ou en utilisant la fonction Arrays.toString (en ayant ajouté import
+     * java.util.Arrays; au début du programme). Voici une façon de tester votre action decaler :
+     * char[] t = {'a','b','c','d'};
+     * System.out.println(Arrays.toString(t));
+     * decaler(t);
+     * System.out.println(Arrays.toString(t));
+     */
+    public static void decaler(char[] tableau){
+        // Je récupère le premier caractère et le met de côté
+        char premierCaractere = tableau[0];
+
+        // J'itère sur les autres caractères du tableau et je les décale vers indice - 1
+        for(int i = 1; i < tableau.length; i++){
+            tableau[i-1] = tableau[i];
+        }
+
+        // Je place le premier caractère au bout du tableau
+        tableau[tableau.length-1] = premierCaractere;
+    }
+
+
+    /**
+     * Lorsque le rotor 1 a fait un tour complet, il décale d'un cran le rotor 2, comme dans un compteur
+     *     kilométrique de voiture. Modifier la fonction decodeMsg pour prendre en compte ces décalages.
+     *     Vous devriez alors pouvoir décoder ce message :
+     * ypoyarhcmsejvud nfs zpl isw uvssacwvv
+     */
+    public static String decodeMsgQuestionD(String messageADecoder, char[] rotor1, char[] rotor2, char[] reflec){
+        String resultatDecodage = "";   // chaîne de caractères à renvoyer, au début elle est vide
+        int compteurDecalages = 0;
+
+        // j'itère sur chaque caractère de la chaîne à décoder
+        for(int i = 0; i < messageADecoder.length(); i++){
+            // si le caractère est un espace, je le recopie tel quel dans la chaîne résultat
+            if(messageADecoder.charAt(i) == ' ')
+                resultatDecodage += ' ';
+                // Équivalent à resultatDecodage = resultatDecodage + ' ';
+
+            else{
+                // si ce n'est pas un espace, on  le décode
+                char lettreADecoder = decodeCar(rotor1, rotor2, reflec, messageADecoder.charAt(i));
+                resultatDecodage += lettreADecoder;
+                // Équivalent à resultatDecodage = resultatDecodage + lettreADecoder;
+            }
+
+            // Peu importe le caractère décodé, je décale le rotor 1
+            decaler(rotor1);
+            compteurDecalages++;
+
+            // Si le compteur de décalages est égal à 26, je décale le rotor 2
+            if(compteurDecalages == 26){
+                decaler(rotor2);
+                compteurDecalages = 0;
+            }
+        }
+        return resultatDecodage;
+    }
+
 }
